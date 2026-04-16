@@ -1,28 +1,499 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gastón Ocampos Propiedades</title>
+  <meta name="description" content="Venta y alquiler de propiedades en Salta. Casas, terrenos, departamentos y locales." />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+    a { text-decoration: none; }
+    img { display: block; width: 100%; }
+
+    .header {
+      background: #0f2747;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 4px 14px rgba(0,0,0,.15);
+    }
+    .container {
+      width: min(1180px, 92%);
+      margin: 0 auto;
+    }
+    .nav {
+      min-height: 78px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: .5px;
+    }
+    .brand-badge {
+      width: 52px;
+      height: 52px;
+      border: 2px solid #c89a3d;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      color: #c89a3d;
+      font-size: 24px;
+      font-weight: 900;
+    }
+    .brand-text small {
+      display: block;
+      color: #cbd5e1;
+      font-size: 11px;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+    .menu a {
+      color: white;
+      font-weight: 600;
+      opacity: .95;
+    }
+    .btn-wa {
+      background: #43b35b;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .hero {
+      min-height: 640px;
+      background:
+        linear-gradient(rgba(15,39,71,.45), rgba(15,39,71,.45)),
+        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80')
+        center/cover no-repeat;
+      display: flex;
+      align-items: center;
+      padding: 40px 0 50px;
+    }
+    .hero-content {
+      color: white;
+      width: 100%;
+    }
+    .hero h1 {
+      font-size: clamp(38px, 6vw, 72px);
+      line-height: .98;
+      max-width: 720px;
+      margin-bottom: 16px;
+      font-weight: 900;
+    }
+    .hero p {
+      font-size: clamp(18px, 2.2vw, 30px);
+      margin-bottom: 28px;
+      color: #e5e7eb;
+    }
+
+    .search-box {
+      background: rgba(255,255,255,.98);
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 16px 35px rgba(0,0,0,.18);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr) 170px;
+      gap: 12px;
+      max-width: 1120px;
+    }
+    .search-box select,
+    .search-box button {
+      height: 56px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+      padding: 0 14px;
+    }
+    .search-box button {
+      background: #c89a3d;
+      color: white;
+      border: none;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .section {
+      padding: 56px 0;
+    }
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      color: #0f2747;
+      margin-bottom: 26px;
+      font-weight: 800;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 30px rgba(0,0,0,.11);
+    }
+    .card-img {
+      position: relative;
+      height: 230px;
+      overflow: hidden;
+    }
+    .card-img img {
+      height: 100%;
+      object-fit: cover;
+    }
+    .tag {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: #0f2747;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .4px;
+    }
+    .tag.gold { background: #c89a3d; }
+    .tag.red { background: #b42318; }
+
+    .card-body {
+      padding: 18px;
+    }
+    .card-body h3 {
+      font-size: 25px;
+      color: #111827;
+      margin-bottom: 12px;
+      line-height: 1.15;
+    }
+    .price {
+      color: #c89a3d;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .meta {
+      color: #6b7280;
+      font-size: 15px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    .card-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .btn-primary {
+      background: #0f2747;
+      color: white;
+    }
+    .btn-secondary {
+      background: #eef2f7;
+      color: #0f2747;
+    }
+
+    .about {
+      background: white;
+      border-radius: 20px;
+      padding: 34px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.06);
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 30px;
+      align-items: center;
+    }
+    .about h2 {
+      font-size: 36px;
+      color: #0f2747;
+      margin-bottom: 14px;
+    }
+    .about p {
+      font-size: 17px;
+      color: #4b5563;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .about-box {
+      background: #0f2747;
+      color: white;
+      border-radius: 18px;
+      padding: 28px;
+    }
+    .about-box h3 {
+      margin-bottom: 14px;
+      font-size: 26px;
+    }
+    .about-box p {
+      color: #e5e7eb;
+      margin-bottom: 18px;
+      line-height: 1.6;
+    }
+
+    .contact-cta {
+      background: linear-gradient(135deg, #0f2747, #173b6b);
+      color: white;
+      border-radius: 22px;
+      padding: 34px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 14px 28px rgba(15,39,71,.18);
+    }
+    .contact-cta h3 {
+      font-size: 34px;
+      margin-bottom: 10px;
+    }
+    .contact-cta p {
+      color: #dbe6f3;
+      font-size: 17px;
+    }
+    .contact-cta .btn-primary {
+      background: #c89a3d;
+      padding: 16px 24px;
+      font-size: 17px;
+    }
+
+    .footer {
+      background: #0b1d35;
+      color: #d1d5db;
+      padding: 32px 0;
+      margin-top: 60px;
+    }
+    .footer-wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    @media (max-width: 1050px) {
+      .cards { grid-template-columns: repeat(2, 1fr); }
+      .search-box { grid-template-columns: repeat(2, 1fr); }
+      .about { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .nav { justify-content: center; }
+      .menu { justify-content: center; }
+      .hero { min-height: 560px; }
+      .search-box { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .card-body h3 { font-size: 22px; }
+      .price { font-size: 24px; }
+      .contact-cta h3 { font-size: 28px; }
+      .about { padding: 24px; }
+    }
+  </style>
 </head>
-<body style="font-family: Arial; text-align: center;">
-  <h1>Gastón Ocampos Propiedades</h1>
-  <p>Venta y alquiler en Salta</p>
+<body>
 
-  <h2>Propiedades</h2>
+  <header class="header">
+    <div class="container nav">
+      <div class="brand">
+        <div class="brand-badge">GO</div>
+        <div class="brand-text">
+          GASTÓN OCAMPOS
+          <small>PROPIEDADES</small>
+        </div>
+      </div>
 
-  <div>
-    <h3>Casa en Zona Norte</h3>
-    <p>USD 120.000</p>
-    <a href="https://wa.me/549387XXXXXXX">Consultar por WhatsApp</a>
-  </div>
+      <nav class="menu">
+        <a href="#inicio">Inicio</a>
+        <a href="#propiedades">Propiedades</a>
+        <a href="#nosotros">Nosotros</a>
+        <a href="#contacto">Contacto</a>
+        <a class="btn-wa" href="https://wa.me/5493875431516?text=Hola%20Gastón,%20quiero%20consultar%20por%20una%20propiedad" target="_blank">WhatsApp</a>
+      </nav>
+    </div>
+  </header>
 
-  <br>
+  <section class="hero" id="inicio">
+    <div class="container hero-content">
+      <h1>ENCONTRÁ LA PROPIEDAD DE TUS SUEÑOS</h1>
+      <p>Venta y alquiler en Salta</p>
 
-  <div>
-    <h3>Terreno en Barrio Sur</h3>
-    <p>USD 50.000</p>
-    <a href="https://wa.me/549387XXXXXXX">Consultar por WhatsApp</a>
-  </div>
+      <div class="search-box">
+        <select>
+          <option>Tipo de propiedad</option>
+          <option>Casa</option>
+          <option>Terreno</option>
+          <option>Departamento</option>
+          <option>Local</option>
+        </select>
+        <select>
+          <option>Zona</option>
+          <option>Zona Norte</option>
+          <option>Barrio Sur</option>
+          <option>Centro</option>
+          <option>San Lorenzo</option>
+        </select>
+        <select>
+          <option>Operación</option>
+          <option>Venta</option>
+          <option>Alquiler</option>
+        </select>
+        <select>
+          <option>Precio máximo</option>
+          <option>USD 50.000</option>
+          <option>USD 100.000</option>
+          <option>USD 150.000</option>
+          <option>USD 200.000</option>
+        </select>
+        <button>Buscar</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="propiedades">
+    <div class="container">
+      <h2 class="section-title">Propiedades destacadas</h2>
+
+      <div class="cards">
+        <article class="card">
+          <div class="card-img">
+            <span class="tag">EN VENTA</span>
+            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=900&q=80" alt="Casa en Zona Norte" />
+          </div>
+          <div class="card-body">
+            <h3>Casa en Zona Norte</h3>
+            <div class="price">USD 120.000</div>
+            <div class="meta">3 Dorms. | 2 Baños | 150 m²</div>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20consultar%20por%20la%20Casa%20en%20Zona%20Norte" target="_blank">Consultar</a>
+              <a class="btn btn-secondary" href="#contacto">Más info</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img">
+            <span class="tag gold">EN ALQUILER</span>
+            <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=900&q=80" alt="Departamento Céntrico" />
+          </div>
+          <div class="card-body">
+            <h3>Departamento Céntrico</h3>
+            <div class="price">$350.000 / mes</div>
+            <div class="meta">2 Dorms. | 1 Baño | 75 m²</div>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20consultar%20por%20el%20Departamento%20Céntrico" target="_blank">Consultar</a>
+              <a class="btn btn-secondary" href="#contacto">Más info</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img">
+            <span class="tag red">EN VENTA</span>
+            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80" alt="Terreno en Barrio Sur" />
+          </div>
+          <div class="card-body">
+            <h3>Terreno en Barrio Sur</h3>
+            <div class="price">USD 50.000</div>
+            <div class="meta">500 m² de terreno | Excelente ubicación</div>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20consultar%20por%20el%20Terreno%20en%20Barrio%20Sur" target="_blank">Consultar</a>
+              <a class="btn btn-secondary" href="#contacto">Más info</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-img">
+            <span class="tag">RESERVADA</span>
+            <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=900&q=80" alt="Local Comercial" />
+          </div>
+          <div class="card-body">
+            <h3>Local Comercial</h3>
+            <div class="price">USD 80.000</div>
+            <div class="meta">80 m² | Frente vidriado | Muy buena zona</div>
+            <div class="card-actions">
+              <a class="btn btn-primary" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20consultar%20por%20el%20Local%20Comercial" target="_blank">Consultar</a>
+              <a class="btn btn-secondary" href="#contacto">Más info</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="nosotros">
+    <div class="container">
+      <div class="about">
+        <div>
+          <h2>Gastón Ocampos Propiedades</h2>
+          <p>Nos especializamos en la venta y alquiler de casas, terrenos, departamentos y locales en Salta y alrededores.</p>
+          <p>Brindamos atención personalizada, asesoramiento profesional y acompañamiento en cada operación para que comprar, vender o alquilar sea mucho más simple.</p>
+          <p>Publicamos propiedades destacadas, oportunidades y opciones pensadas para cada necesidad.</p>
+        </div>
+
+        <div class="about-box">
+          <h3>Atención directa</h3>
+          <p>Consultá por WhatsApp y recibí respuesta rápida sobre precio, ubicación, disponibilidad y visitas.</p>
+          <a class="btn btn-primary" style="background:#c89a3d;" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20asesoramiento%20inmobiliario" target="_blank">Hablar con Gastón</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contacto">
+    <div class="container">
+      <div class="contact-cta">
+        <div>
+          <h3>¿Necesitás ayuda?</h3>
+          <p>Contactanos hoy mismo para más información sobre propiedades en venta y alquiler.</p>
+        </div>
+        <a class="btn btn-primary" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20vi%20la%20web%20y%20quiero%20más%20información" target="_blank">Enviar consulta</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-wrap">
+      <div>
+        <strong>Gastón Ocampos Propiedades</strong><br />
+        Venta y alquiler en Salta
+      </div>
+      <div>
+        WhatsApp: +54 9 387 XXX XXXX
+      </div>
+    </div>
+  </footer>
 
 </body>
 </html>
