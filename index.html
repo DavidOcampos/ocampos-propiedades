@@ -89,7 +89,7 @@
         <a href="#inicio">Inicio</a>
         <a href="#propiedades">Propiedades</a>
         <a href="#contacto">Contacto</a>
-        <a class="btn-wa" id="waHeader" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20quiero%20consultar%20por%20una%20propiedad" target="_blank">WhatsApp</a>
+        <a class="btn-wa" id="waHeader" href="#" target="_blank">WhatsApp</a>
         <button class="btn-admin" id="openAdminBtn">Admin</button>
       </nav>
     </div>
@@ -110,7 +110,7 @@
     </div>
   </section>
 
-  <section class="section" id="adminSection" class="hidden">
+  <section class="section hidden" id="adminSection">
     <div class="container">
       <h2 class="section-title">Panel administrador</h2>
       <div class="top-note">Entrá con el mail y contraseña de Gastón. Desde acá puede agregar, editar y borrar propiedades.</div>
@@ -147,6 +147,7 @@
                 </select>
               </div>
             </div>
+
             <div class="grid2">
               <div class="field">
                 <label>Operación</label>
@@ -160,6 +161,7 @@
                 <input id="price" type="text" placeholder="USD 120.000" />
               </div>
             </div>
+
             <div class="grid2">
               <div class="field">
                 <label>Ubicación</label>
@@ -175,14 +177,17 @@
                 </select>
               </div>
             </div>
-            <div class="field">
-              <label>URL de imagen</label>
-              <input id="image_url" type="text" placeholder="https://..." />
-            </div>
+
             <div class="field">
               <label>Descripción</label>
               <textarea id="description" placeholder="Descripción de la propiedad"></textarea>
             </div>
+
+            <div class="field">
+              <label>Fotos de la propiedad</label>
+              <input id="images" type="file" accept="image/*" multiple />
+            </div>
+
             <div class="grid2">
               <button class="btn btn-primary" id="saveBtn">Guardar propiedad</button>
               <button class="btn btn-secondary" id="cancelEditBtn">Cancelar edición</button>
@@ -210,7 +215,7 @@
           <h3>¿Necesitás ayuda?</h3>
           <p>Contactanos hoy mismo para más información sobre propiedades en venta y alquiler.</p>
         </div>
-        <a class="btn btn-primary" id="waFooter" href="https://wa.me/5493870000000?text=Hola%20Gastón,%20vi%20la%20web%20y%20quiero%20más%20información" target="_blank">Enviar consulta</a>
+        <a class="btn btn-primary" id="waFooter" href="#" target="_blank">Enviar consulta</a>
       </div>
     </div>
   </section>
@@ -223,9 +228,9 @@
   </footer>
 
   <script>
-    // 1) PEGÁ TUS DATOS DE SUPABASE ACÁ
     const SUPABASE_URL = 'https://vhsdmmlnurztnwojerhj.supabase.co';
     const SUPABASE_ANON_KEY = 'sb_publishable_kQXiGwL85wJUhmInsTJHdQ_ogPgsWLF';
+    const WHATSAPP_NUMBER = '5493875431516'; // CAMBIAR por el real de Gastón
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let editingId = null;
@@ -243,6 +248,12 @@
 
     const field = (id) => document.getElementById(id);
 
+    document.getElementById('waHeader').href =
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Gastón, quiero consultar por una propiedad')}`;
+
+    document.getElementById('waFooter').href =
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Gastón, vi la web y quiero más información')}`;
+
     function showMsg(el, text, type = 'ok') {
       el.innerHTML = `<div class="message ${type}">${text}</div>`;
       setTimeout(() => el.innerHTML = '', 3500);
@@ -258,19 +269,26 @@
       return map[status] || 'DISPONIBLE';
     }
 
+    function fallbackImage() {
+      return 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80';
+    }
+
     function buildCard(item) {
-      const whatsapp = `https://wa.me/5493870000000?text=${encodeURIComponent('Hola Gastón, quiero consultar por ' + item.title)}`;
+      const firstImage = item.images?.[0]?.image_url || fallbackImage();
+      const whatsapp = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola Gastón, quiero consultar por ' + item.title)}`;
+
       return `
         <article class="card">
           <div class="card-img">
             <span class="tag">${cardTag(item.status)}</span>
-            <img src="${item.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80'}" alt="${item.title}" />
+            <img src="${firstImage}" alt="${item.title}" />
           </div>
           <div class="card-body">
             <h3>${item.title || ''}</h3>
             <div class="price">${item.price || ''}</div>
             <div class="meta">${item.type || ''} · ${item.operation || ''} · ${item.location || ''}</div>
             <div class="desc">${item.description || ''}</div>
+            <div class="meta">${item.images?.length || 0} fotos</div>
             <div class="card-actions">
               <a class="btn btn-primary" href="${whatsapp}" target="_blank">Consultar</a>
             </div>
@@ -280,13 +298,16 @@
     }
 
     function buildAdminItem(item) {
+      const firstImage = item.images?.[0]?.image_url || fallbackImage();
+
       return `
         <div class="admin-item">
-          <img src="${item.image_url || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=900&q=80'}" alt="${item.title}">
+          <img src="${firstImage}" alt="${item.title}">
           <div>
             <h4>${item.title}</h4>
             <div class="meta">${item.price} · ${item.type} · ${item.operation} · ${item.location}</div>
             <div class="desc">${item.description || ''}</div>
+            <div class="meta">${item.images?.length || 0} fotos cargadas</div>
           </div>
           <div class="admin-actions">
             <button class="btn btn-secondary" onclick="editProperty(${item.id})">Editar</button>
@@ -294,26 +315,6 @@
           </div>
         </div>
       `;
-    }
-
-    async function loadProperties() {
-      const { data, error } = await sb.from('properties').select('*').order('id', { ascending: false });
-      if (error) {
-        propertiesGrid.innerHTML = '';
-        emptyProperties.classList.remove('hidden');
-        emptyProperties.textContent = 'No se pudieron cargar las propiedades.';
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        propertiesGrid.innerHTML = '';
-        emptyProperties.classList.remove('hidden');
-      } else {
-        emptyProperties.classList.add('hidden');
-        propertiesGrid.innerHTML = data.map(buildCard).join('');
-      }
-
-      renderAdminList(data || []);
     }
 
     function renderAdminList(data) {
@@ -324,6 +325,82 @@
         adminEmpty.classList.add('hidden');
         adminList.innerHTML = data.map(buildAdminItem).join('');
       }
+    }
+
+    async function getPropertyImages(propertyId) {
+      const { data, error } = await sb
+        .from('property_images')
+        .select('*')
+        .eq('property_id', propertyId)
+        .order('sort_order', { ascending: true });
+
+      if (error) return [];
+      return data || [];
+    }
+
+    async function uploadImages(propertyId, files) {
+      const uploaded = [];
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = file.name.split('.').pop() || 'jpg';
+        const fileName = `${propertyId}/${Date.now()}-${i}.${ext}`;
+
+        const { error: uploadError } = await sb.storage
+          .from('properties')
+          .upload(fileName, file, { upsert: true });
+
+        if (uploadError) throw uploadError;
+
+        const { data } = sb.storage
+          .from('properties')
+          .getPublicUrl(fileName);
+
+        uploaded.push({
+          property_id: propertyId,
+          image_url: data.publicUrl,
+          sort_order: i
+        });
+      }
+
+      if (uploaded.length) {
+        const { error } = await sb.from('property_images').insert(uploaded);
+        if (error) throw error;
+      }
+    }
+
+    async function loadProperties() {
+      const { data, error } = await sb
+        .from('properties')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        propertiesGrid.innerHTML = '';
+        emptyProperties.classList.remove('hidden');
+        emptyProperties.textContent = 'No se pudieron cargar las propiedades.';
+        renderAdminList([]);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        propertiesGrid.innerHTML = '';
+        emptyProperties.classList.remove('hidden');
+        renderAdminList([]);
+        return;
+      }
+
+      emptyProperties.classList.add('hidden');
+
+      const withImages = await Promise.all(
+        data.map(async (item) => {
+          const imgs = await getPropertyImages(item.id);
+          return { ...item, images: imgs };
+        })
+      );
+
+      propertiesGrid.innerHTML = withImages.map(buildCard).join('');
+      renderAdminList(withImages);
     }
 
     async function checkSession() {
@@ -342,8 +419,8 @@
       field('price').value = '';
       field('location').value = '';
       field('status').value = 'disponible';
-      field('image_url').value = '';
       field('description').value = '';
+      field('images').value = '';
     }
 
     openAdminBtn.addEventListener('click', () => {
@@ -354,8 +431,10 @@
     field('loginBtn').addEventListener('click', async () => {
       const email = field('loginEmail').value.trim();
       const password = field('loginPassword').value.trim();
+
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if (error) return showMsg(loginMsg, 'No se pudo iniciar sesión.', 'error');
+
       showMsg(loginMsg, 'Sesión iniciada.');
       await checkSession();
       await loadProperties();
@@ -378,30 +457,60 @@
         price: field('price').value.trim(),
         location: field('location').value.trim(),
         status: field('status').value,
-        image_url: field('image_url').value.trim(),
         description: field('description').value.trim()
       };
+
+      const files = field('images').files;
 
       if (!payload.title || !payload.price || !payload.location) {
         return showMsg(formMsg, 'Completá título, precio y ubicación.', 'error');
       }
 
-      let result;
+      let propertyId = editingId;
+
       if (editingId) {
-        result = await sb.from('properties').update(payload).eq('id', editingId);
+        const result = await sb
+          .from('properties')
+          .update(payload)
+          .eq('id', editingId)
+          .select()
+          .single();
+
+        if (result.error) return showMsg(formMsg, 'No se pudo actualizar.', 'error');
+        propertyId = result.data.id;
       } else {
-        result = await sb.from('properties').insert(payload);
+        const result = await sb
+          .from('properties')
+          .insert(payload)
+          .select()
+          .single();
+
+        if (result.error) return showMsg(formMsg, 'No se pudo guardar.', 'error');
+        propertyId = result.data.id;
       }
 
-      if (result.error) return showMsg(formMsg, 'No se pudo guardar.', 'error');
+      try {
+        if (files && files.length > 0) {
+          await uploadImages(propertyId, files);
+        }
+      } catch (e) {
+        return showMsg(formMsg, 'La propiedad se guardó, pero falló la subida de fotos.', 'error');
+      }
+
       showMsg(formMsg, editingId ? 'Propiedad actualizada.' : 'Propiedad agregada.');
       clearForm();
       await loadProperties();
     });
 
     window.editProperty = async (id) => {
-      const { data, error } = await sb.from('properties').select('*').eq('id', id).single();
+      const { data, error } = await sb
+        .from('properties')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       if (error || !data) return showMsg(formMsg, 'No se pudo cargar la propiedad.', 'error');
+
       editingId = id;
       field('formTitle').textContent = 'Editar propiedad';
       field('title').value = data.title || '';
@@ -410,15 +519,31 @@
       field('price').value = data.price || '';
       field('location').value = data.location || '';
       field('status').value = data.status || 'disponible';
-      field('image_url').value = data.image_url || '';
       field('description').value = data.description || '';
+      field('images').value = '';
+
       adminSection.scrollIntoView({ behavior: 'smooth' });
     };
 
     window.deleteProperty = async (id) => {
       if (!confirm('¿Querés borrar esta propiedad?')) return;
-      const { error } = await sb.from('properties').delete().eq('id', id);
+
+      const { error: errorImages } = await sb
+        .from('property_images')
+        .delete()
+        .eq('property_id', id);
+
+      if (errorImages) {
+        console.log(errorImages);
+      }
+
+      const { error } = await sb
+        .from('properties')
+        .delete()
+        .eq('id', id);
+
       if (error) return showMsg(formMsg, 'No se pudo borrar.', 'error');
+
       showMsg(formMsg, 'Propiedad borrada.');
       await loadProperties();
     };
